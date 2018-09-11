@@ -36,6 +36,8 @@ namespace CommandIDs {
 
   export const about = 'help:about';
 
+  export const toggleShortcuts = 'help:toggleShortcuts';
+
   export const activate = 'help:activate';
 
   export const close = 'help:close';
@@ -147,6 +149,7 @@ function activate(
   const helpMenu = mainMenu.helpMenu;
   const labGroup = [
     CommandIDs.about,
+    CommandIDs.toggleShortcuts,
     'faq-jupyterlab:open',
     CommandIDs.launchClassic
   ].map(command => {
@@ -325,6 +328,45 @@ function activate(
     }
   });
 
+  let dialog: Dialog<any> = undefined;
+  commands.addCommand(CommandIDs.toggleShortcuts, {
+    label: `Keyboard Shortcuts Quick Reference`,
+    execute: () => {
+      if (dialog) {
+        dialog.reject();
+        dialog = undefined;
+        return;
+      }
+
+      const commandText = app.commands.keyBindings
+        .filter(
+          binding =>
+            binding.keys[0] !== '' && app.commands.label(binding.command)
+        )
+        .map(binding => (
+          <tr>
+            <td>{app.commands.label(binding.command)}</td>{' '}
+            <td>{binding.keys.join('')}</td>
+          </tr>
+        ));
+
+      dialog = new Dialog({
+        title: 'Keyboard shortcuts',
+        body: <table>{commandText}</table>,
+        buttons: [
+          Dialog.createButton({
+            label: 'DISMISS'
+          })
+        ]
+      });
+
+      // Clears state if user closes dialog with dismiss button.
+      dialog.launch().then(() => {
+        dialog = undefined;
+      });
+    }
+  });
+
   commands.addCommand(CommandIDs.open, {
     label: args => args['text'] as string,
     execute: args => {
@@ -354,5 +396,6 @@ function activate(
     palette.addItem({ args, command: CommandIDs.open, category });
   });
   palette.addItem({ command: 'apputils:reset', category });
+  palette.addItem({ command: 'help:toggleShortcuts', category });
   palette.addItem({ command: CommandIDs.launchClassic, category });
 }

@@ -956,6 +956,17 @@
       },
       "type": "object"
     },
+    "help:toggleShortcuts": {
+      "default": {},
+      "properties": {
+        "command": { "default": "help:toggleShortcuts" },
+        "keys": { "default": ["Shift /"] },
+        "selector": { "default": "body" },
+        "title": { "default": "Toggle Keyboard Shortcuts Reference" },
+        "category": { "default": "Help" }
+      },
+      "type": "object"
+    },
     "shortcutui:open-ui": {
       "default": {},
       "properties": {
